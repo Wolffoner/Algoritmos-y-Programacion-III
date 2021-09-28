@@ -272,13 +272,13 @@ test09CuandoElGuardiaInteractuaPorSegundaVezConUnPersonajeCalificadoPorElPuebloC
 ! !
 
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/22/2021 00:06:18'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/27/2021 20:52:29'!
 hamilton
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	^ #Hamilton! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/22/2021 00:06:29'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/27/2021 21:08:21'!
 tirion
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	^ #Tirion! !
 
 !PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/21/2021 20:42:44'!
 treborElGuardia
@@ -317,10 +317,14 @@ DenotativeObject subclass: #TreborElGuardiaDeSkyrim
 TreborElGuardiaDeSkyrim class
 	instanceVariableNames: 'frases cantidadDeInteracciones'!
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/18/2021 11:24:55'!
-interactuar
-	self recordarInteraccion.
-	^ self responderSegunCantidadDeInteracciones! !
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/27/2021 21:07:47'!
+interactuarCon: unPersonajeJugadorAInteractuar
+	(unPersonajeJugadorAInteractuar = #Tirion)
+		ifTrue: [ ^ 'Hola forastero']
+		ifFalse: [
+			self recordarInteraccion.
+			^ self responderSegunCantidadDeInteracciones
+		]! !
 
 !TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/18/2021 11:24:19'!
 olvidar
@@ -337,11 +341,11 @@ responderSegunCantidadDeInteracciones
 	^ frases at: (cantidadDeInteracciones min: frases size)! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'JMB 9/25/2021 13:08:25'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'JMB 9/27/2021 21:08:41'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	frases := #('Hola forastero' '¿Todo bien?' '¿Algún problema?' ).
-	cantidadDeInteracciones := 0.! !
+	cantidadDeInteracciones := 1.! !
 
 TreborElGuardiaDeSkyrim initializeAfterFileIn!
