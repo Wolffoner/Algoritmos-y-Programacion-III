@@ -272,13 +272,13 @@ test09CuandoElGuardiaInteractuaPorSegundaVezConUnPersonajeCalificadoPorElPuebloC
 ! !
 
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/22/2021 00:06:18'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'LWC 9/28/2021 20:30:03'!
 hamilton
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	^#Hamilton! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/22/2021 00:06:29'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'LWC 9/28/2021 20:30:15'!
 tirion
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	^#Tirion.! !
 
 !PruebasInteracionesConTreborElGuardia class methodsFor: 'personajes' stamp: 'JMB 9/21/2021 20:42:44'!
 treborElGuardia
@@ -315,33 +315,54 @@ DenotativeObject subclass: #TreborElGuardiaDeSkyrim
 
 !classDefinition: 'TreborElGuardiaDeSkyrim class' category: 'Ejercicio1-PNJ-Episodio2'!
 TreborElGuardiaDeSkyrim class
-	instanceVariableNames: 'frases cantidadDeInteracciones'!
+	instanceVariableNames: 'frasesParaResponderAPersonajesDesconocidos frasesParaResponderAPersonajesPrometedores cantidadDeInteraccionesPorPersonaje reputacionDePersonajes'!
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/18/2021 11:24:55'!
-interactuar
-	self recordarInteraccion.
-	^ self responderSegunCantidadDeInteracciones! !
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'LWC 9/28/2021 20:54:16'!
+interactuarCon: PersonajeJugador
+	self recordarInteraccionCon: PersonajeJugador.
+	self recordarReputacionCon: PersonajeJugador.
+	^ self responderSegunCantidadDeInteraccionesCon: PersonajeJugador.! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/18/2021 11:24:19'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'LWC 9/28/2021 20:43:00'!
 olvidar
-	cantidadDeInteracciones := 0! !
+	cantidadDeInteraccionesPorPersonaje := Dictionary new.
+	reputacionDePersonajes  := Dictionary new.! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'JMB 9/18/2021 11:25:28'!
-recordarInteraccion
-	cantidadDeInteracciones := cantidadDeInteracciones + 1.
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 20:17:32'!
+recordarInteraccionCon: unPersonajeJugador
+	| obtenerCantidadInteracciones|
+	obtenerCantidadInteracciones := cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador ifAbsent: [0].
+	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: obtenerCantidadInteracciones + 1.
+	
 ! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'JMB 9/18/2021 11:35:15'!
-responderSegunCantidadDeInteracciones
-	^ frases at: (cantidadDeInteracciones min: frases size)! !
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 21:13:32'!
+recordarReputacionCon: unPersonajeJugador
+	| reputacion |
+	reputacion := reputacionDePersonajes at: unPersonajeJugador ifAbsent: ['Desconocido'].
+	reputacionDePersonajes at: unPersonajeJugador put: reputacion.
+! !
+
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:08:43'!
+responderSegunCantidadDeInteraccionesCon: unPersonajeJugador
+	| cantidadInteracciones reputacion |
+	cantidadInteracciones := cantidadDeInteraccionesPorPersonaje  at: unPersonajeJugador.
+	reputacion := reputacionDePersonajes at: unPersonajeJugador.
+	^frasesParaResponderAPersonajesDesconocidos at: (cantidadInteracciones min: frasesParaResponderAPersonajesDesconocidos size).
+	"(reputacion == 'Desconocido') ifTrue: [
+		^frasesParaResponderAPersonajesDesconocidos at: (cantidadInteracciones min: frasesParaResponderAPersonajesDesconocidos size).]
+	ifFalse: [
+		^frasesParaResponderAPersonajesPrometedores at: (cantidadInteracciones min: frasesParaResponderAPersonajesPrometedores  size).]."! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'JMB 9/25/2021 13:08:25'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'LWC 9/28/2021 22:09:13'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
-	frases := #('Hola forastero' '¿Todo bien?' '¿Algún problema?' ).
-	cantidadDeInteracciones := 0.! !
+	frasesParaResponderAPersonajesDesconocidos := #('Hola forastero' '¿Todo bien?' '¿Algún problema?' ).
+	frasesParaResponderAPersonajesPrometedores := #('Bienvenido Aventurero' 'Bienvenido!!' 'Espero que tengas una buena estadia en Riverwood' ).
+	cantidadDeInteraccionesPorPersonaje := ((Dictionary new) add: (#Hamilton->3); add: (#Tirion->3); yourself).
+	reputacionDePersonajes := ((Dictionary new) add: (#Hamilton->'Desconocido'); add: (#Tirion->'Desconocido'); yourself).! !
 
 TreborElGuardiaDeSkyrim initializeAfterFileIn!
