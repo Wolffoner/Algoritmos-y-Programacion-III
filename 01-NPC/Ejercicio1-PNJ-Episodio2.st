@@ -303,9 +303,9 @@ hacerQueElGuardiaOlvideSusInteracciones
 hacerQueRiverwoodOlvideTodasSusCalificaciones
 	"Implementar cuando sea necesario"! !
 
-!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/22/2021 00:06:53'!
+!PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'LWC 9/28/2021 22:34:40'!
 hacerQueRiverwoodVeaPrometedorAHamilton
-	Assert isTrue: false description: 'Reemplazar esto por la implementación correspondiente'.! !
+	TreborElGuardiaDeSkyrim cambiarReputacionDe: #Hamilton.! !
 
 !PruebasInteracionesConTreborElGuardia class methodsFor: 'opiniones e interacciones' stamp: 'JMB 9/25/2021 12:52:12'!
 olvidarInteraccionesYOpiniones
@@ -327,6 +327,7 @@ DenotativeObject subclass: #TreborElGuardiaDeSkyrim
 TreborElGuardiaDeSkyrim class
 	instanceVariableNames: 'frasesParaResponderAPersonajesDesconocidos frasesParaResponderAPersonajesPrometedores cantidadDeInteraccionesPorPersonaje reputacionDePersonajes'!
 
+<<<<<<< HEAD
 <<<<<<< HEAD:01-NPC/03 - Ejercicio1-PNJ-Episodio2.CodigoInicial.st
 !TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'JMB 9/27/2021 21:07:47'!
 interactuarCon: unPersonajeJugadorAInteractuar
@@ -343,6 +344,13 @@ interactuarCon: PersonajeJugador
 	self recordarReputacionCon: PersonajeJugador.
 	^ self responderSegunCantidadDeInteraccionesCon: PersonajeJugador.! !
 >>>>>>> DevLean:01-NPC/Ejercicio1-PNJ-Episodio2.st
+=======
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'LWC 9/28/2021 22:38:05'!
+interactuarCon: unPersonajeJugador
+	self recordarInteraccionCon: unPersonajeJugador.
+	self recordarReputacionCon: unPersonajeJugador.
+	^ self responderSegunCantidadDeInteraccionesCon: unPersonajeJugador.! !
+>>>>>>> DevLean
 
 !TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'LWC 9/28/2021 20:43:00'!
 olvidar
@@ -350,33 +358,40 @@ olvidar
 	reputacionDePersonajes  := Dictionary new.! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 20:17:32'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:38:23'!
+cambiarReputacionDeDesconocidoAPrometedor: unPersonajeJugador
+	reputacionDePersonajes at: unPersonajeJugador put: [1].
+	
+	! !
+
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:40:16'!
 recordarInteraccionCon: unPersonajeJugador
-	| obtenerCantidadInteracciones|
-	obtenerCantidadInteracciones := cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador ifAbsent: [0].
-	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: obtenerCantidadInteracciones + 1.
+	| cantidadInteracciones|
+	cantidadInteracciones := cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador ifAbsent: [0].
+	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: cantidadInteracciones + 1.
 	
 ! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 21:13:32'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:39:24'!
 recordarReputacionCon: unPersonajeJugador
 	| reputacion |
-	reputacion := reputacionDePersonajes at: unPersonajeJugador ifAbsent: ['Desconocido'].
+	"La reputacion por la convencion definida nuestra, viene a ser 0: Desconocido y 1: Prometedor"
+	reputacion := reputacionDePersonajes at: unPersonajeJugador ifAbsent: [0].
 	reputacionDePersonajes at: unPersonajeJugador put: reputacion.
 ! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:08:43'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'LWC 9/28/2021 22:27:37'!
 responderSegunCantidadDeInteraccionesCon: unPersonajeJugador
 	| cantidadInteracciones reputacion |
 	cantidadInteracciones := cantidadDeInteraccionesPorPersonaje  at: unPersonajeJugador.
 	reputacion := reputacionDePersonajes at: unPersonajeJugador.
-	^frasesParaResponderAPersonajesDesconocidos at: (cantidadInteracciones min: frasesParaResponderAPersonajesDesconocidos size).
-	"(reputacion == 'Desconocido') ifTrue: [
+	(reputacion == 0) ifTrue: [
 		^frasesParaResponderAPersonajesDesconocidos at: (cantidadInteracciones min: frasesParaResponderAPersonajesDesconocidos size).]
 	ifFalse: [
-		^frasesParaResponderAPersonajesPrometedores at: (cantidadInteracciones min: frasesParaResponderAPersonajesPrometedores  size).]."! !
+		^frasesParaResponderAPersonajesPrometedores at: (cantidadInteracciones min: frasesParaResponderAPersonajesPrometedores  size).].! !
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:01-NPC/03 - Ejercicio1-PNJ-Episodio2.CodigoInicial.st
 !TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'JMB 9/27/2021 21:08:41'!
 initializeCollaboratorsFromFile
@@ -386,13 +401,22 @@ initializeCollaboratorsFromFile
 	cantidadDeInteracciones := 1.! !
 =======
 !TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'LWC 9/28/2021 22:09:13'!
+=======
+!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'LWC 9/28/2021 22:41:29'!
+>>>>>>> DevLean
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	frasesParaResponderAPersonajesDesconocidos := #('Hola forastero' '¿Todo bien?' '¿Algún problema?' ).
+<<<<<<< HEAD
 	frasesParaResponderAPersonajesPrometedores := #('Bienvenido Aventurero' 'Bienvenido!!' 'Espero que tengas una buena estadia en Riverwood' ).
 	cantidadDeInteraccionesPorPersonaje := ((Dictionary new) add: (#Hamilton->3); add: (#Tirion->3); yourself).
 	reputacionDePersonajes := ((Dictionary new) add: (#Hamilton->'Desconocido'); add: (#Tirion->'Desconocido'); yourself).! !
 >>>>>>> DevLean:01-NPC/Ejercicio1-PNJ-Episodio2.st
+=======
+	frasesParaResponderAPersonajesPrometedores := #('Bienvenido aventurero!!' 'Espero que tengas una buena estadia en Riverwood' ).
+	cantidadDeInteraccionesPorPersonaje := ((Dictionary new) add: (#Hamilton->3); yourself).
+	reputacionDePersonajes := ((Dictionary new) add: (#Hamilton->0); yourself).! !
+>>>>>>> DevLean
 
 TreborElGuardiaDeSkyrim initializeAfterFileIn!
