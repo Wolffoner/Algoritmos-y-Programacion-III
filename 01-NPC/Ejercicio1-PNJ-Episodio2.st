@@ -11,11 +11,12 @@ DenotativeObject subclass: #CarolinaLaCuranderaDeRiverwood
 CarolinaLaCuranderaDeRiverwood class
 	instanceVariableNames: 'frasesParaResponderAPersonajesDesconocidos frasesParaResponderAPersonajesPrometedores cantidadDeInteraccionesPorPersonaje reputacionDePersonajes'!
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 23:42:55'!
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 21:56:30'!
 interactuarCon: unPersonajeJugador	
-	|respuestaAInteraccionDelJugador|
+	"El NPC Trebor interactua con un personaje jugador"
 	
-	self recordarInteraccionCon: unPersonajeJugador.
+	|respuestaAInteraccionDelJugador|
+	self actualizarCantidadDeInteraccionesCon: unPersonajeJugador.
 	respuestaAInteraccionDelJugador := self responderSegunCantidadDeInteraccionesCon: unPersonajeJugador.
 	
 	self verificarSiMejoraLaReputacionDe: unPersonajeJugador.
@@ -23,51 +24,67 @@ interactuarCon: unPersonajeJugador
 	^ respuestaAInteraccionDelJugador
 ! !
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 23:27:52'!
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 21:57:42'!
 olvidar
+	"El NPC Trebor olvida todas las interacciones previas con todos los personajes jugadores"
+	
 	cantidadDeInteraccionesPorPersonaje := Dictionary new.	! !
 
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:40:11'!
-modificarCantidadDeInteraccionesDe: unPersonajeJugador	 con: valor	
-	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: valor.
-! !
-
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:43:40'!
-obtenerCantidadDeInteraccionesDe: unPersonajeJugador	
-	^cantidadDeInteraccionesPorPersonaje  at: unPersonajeJugador ifAbsent:[0].
-	! !
-
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:45:07'!
-recordarInteraccionCon: unPersonajeJugador
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:54:59'!
+actualizarCantidadDeInteraccionesCon: unPersonajeJugador	
+	"Aumenta en 1 la cantidad de interacciones con el personaje jugador"
+	
 	| cantidadInteracciones |	
 	cantidadInteracciones := self obtenerCantidadDeInteraccionesDe: unPersonajeJugador.
 	self modificarCantidadDeInteraccionesDe: unPersonajeJugador con: cantidadInteracciones +1.	
 	
 ! !
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:10:58'!
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:55:09'!
+modificarCantidadDeInteraccionesDe: unPersonajeJugador	 con: valor	
+	"Modifica la cantidad de interacciones con un personaje jugador con el valor indicado"
+	
+	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: valor.
+! !
+
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:55:21'!
+obtenerCantidadDeInteraccionesDe: unPersonajeJugador	
+	"Retorna la cantidad de interacciones que se tiene con un personaje jugador"
+	
+	^cantidadDeInteraccionesPorPersonaje  at: unPersonajeJugador ifAbsent:[0].
+	! !
+
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:55:34'!
 reiniciarCantidadDeInteraccionesDe: unPersonajeJugador	
+	"Vuelve a 0 la cantidad de interacciones con el personaje jugador."
+	
 	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: 0.
 ! !
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 21:01:21'!
-responderAJugadoresDesconocidosSegunCantidadDeInteracciones: cantidadDeInteracciones
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:58:00'!
+responderAJugadorDesconocidoSegunCantidadDeInteracciones: cantidadDeInteracciones
+	"Responde la frase correspondiente a un jugador con reputacion de Desconocido segun su cantidad de interacciones"
+	
 	^frasesParaResponderAPersonajesDesconocidos at: (cantidadDeInteracciones min: frasesParaResponderAPersonajesDesconocidos size).! !
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 21:02:14'!
-responderAJugadoresPrometedoresSegunCantidadDeInteracciones: cantidadDeInteracciones
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:58:24'!
+responderAJugadorPrometedorSegunCantidadDeInteracciones: cantidadDeInteracciones
+	"Responde la frase correspondiente a un jugador con reputacion de Prometedor segun su cantidad de interacciones"
+	
 	^frasesParaResponderAPersonajesPrometedores at: (cantidadDeInteracciones min: frasesParaResponderAPersonajesPrometedores size).! !
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:09:59'!
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:58:43'!
 responderSegunCantidadDeInteraccionesCon: unPersonajeJugador
+	"Responde al personaje jugador segun la cantidad de interacciones que haya tenido con el mismo."
+	
 	| cantidadInteracciones |
 	cantidadInteracciones := self obtenerCantidadDeInteraccionesDe: unPersonajeJugador.
 	
 	(PuebloDeRiverwood esPersonajePrometedor: unPersonajeJugador) ifTrue: [
-		^self responderAJugadoresPrometedoresSegunCantidadDeInteracciones: cantidadInteracciones.]
+		^self responderAJugadorPrometedorSegunCantidadDeInteracciones: cantidadInteracciones.]
 	ifFalse: [		
-		^self responderAJugadoresDesconocidosSegunCantidadDeInteracciones: cantidadInteracciones.]! !
+		^self responderAJugadorDesconocidoSegunCantidadDeInteracciones: cantidadInteracciones.]! !
 
 !CarolinaLaCuranderaDeRiverwood class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:26:47'!
 verificarSiMejoraLaReputacionDe: unPersonajeJugador	
@@ -81,7 +98,7 @@ verificarSiMejoraLaReputacionDe: unPersonajeJugador
 ! !
 
 
-!CarolinaLaCuranderaDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'PG 10/2/2021 23:53:40'!
+!CarolinaLaCuranderaDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'PG 10/3/2021 22:08:41'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -413,30 +430,40 @@ DenotativeObject subclass: #PuebloDeRiverwood
 PuebloDeRiverwood class
 	instanceVariableNames: 'reputacionDePersonajes'!
 
-!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 23:16:25'!
+!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 22:00:16'!
 cambiarReputacionDePersonajeDesconocidoAPrometedor: unPersonajeJugador
+	"Cambia la reputacion del personaje jugador de Desconocido a Prometedor."
+	
 	reputacionDePersonajes at: unPersonajeJugador put: 'Prometedor'.
 	! !
 
-!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 22:42:52'!
+!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 22:01:22'!
 esPersonajePrometedor: unPersonajeJugador
+	"Retorna true cuando el personaje jugador es Prometedor y false cuando no lo es."
+	
 	^((self obtenerReputacionDe: unPersonajeJugador) = 'Prometedor').! !
 
-!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 22:40:35'!
+!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 22:01:59'!
 obtenerReputacionDe: unPersonajeJugador
+	"Retorna la reputacion de un personaje jugador, la cual puede ser Desconocido o Prometedor."
+
 	^reputacionDePersonajes  at: unPersonajeJugador ifAbsent: ['Desconocido'].! !
 
-!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 20:13:12'!
+!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 22:02:25'!
 olvidarReputacion	
+	"Olvida todas las reputaciones de todos los personajes jugadores."
+	
 	reputacionDePersonajes  := Dictionary new.! !
 
-!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 23:21:26'!
+!PuebloDeRiverwood class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 22:02:59'!
 reiniciarCantidadDeInteraccionesDe: unPersonajeJugador	
+	"Reinicia la cantidad de interacciones de un personaje jugador con todos los NPC del pueblo de Riverwood."
+	
 	CarolinaLaCuranderaDeRiverwood reiniciarCantidadDeInteraccionesDe: unPersonajeJugador.
 	TreborElGuardiaDeSkyrim reiniciarCantidadDeInteraccionesDe: unPersonajeJugador.! !
 
 
-!PuebloDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'PG 10/2/2021 23:53:40'!
+!PuebloDeRiverwood class methodsFor: 'as yet unclassified' stamp: 'PG 10/3/2021 22:08:41'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -456,58 +483,76 @@ DenotativeObject subclass: #TreborElGuardiaDeSkyrim
 TreborElGuardiaDeSkyrim class
 	instanceVariableNames: 'frasesParaResponderAPersonajesDesconocidos frasesParaResponderAPersonajesPrometedores cantidadDeInteraccionesPorPersonaje'!
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 20:27:05'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 21:53:51'!
 interactuarCon: unPersonajeJugador
-	self recordarInteraccionCon: unPersonajeJugador.
+	"El NPC Trebor interactua con un personaje jugador"
+	
+	self actualizarCantidadDeInteraccionesCon: unPersonajeJugador.
 	^ self responderSegunCantidadDeInteraccionesCon: unPersonajeJugador.! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'PG 10/2/2021 23:28:20'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones' stamp: 'PG 10/3/2021 21:54:21'!
 olvidar
+	"El NPC Trebor olvida todas las interacciones previas con todos los personajes jugadores"
+	
 	cantidadDeInteraccionesPorPersonaje := Dictionary new.! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:39:18'!
-modificarCantidadDeInteraccionesDe: unPersonajeJugador	 con: valor	
-	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: valor.
-! !
-
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 22:51:39'!
-obtenerCantidadDeInteraccionesDe: unPersonajeJugador	
-	^cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador ifAbsent: [0].
-! !
-
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:39:47'!
-recordarInteraccionCon: unPersonajeJugador	
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:54:27'!
+actualizarCantidadDeInteraccionesCon: unPersonajeJugador	
+	"Aumenta en 1 la cantidad de interacciones con el personaje jugador"
+	
 	| cantidadInteracciones |
 	cantidadInteracciones := self obtenerCantidadDeInteraccionesDe: unPersonajeJugador.		
 	self modificarCantidadDeInteraccionesDe: unPersonajeJugador con: cantidadInteracciones +1.	
 ! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:13:50'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:54:31'!
+modificarCantidadDeInteraccionesDe: unPersonajeJugador	 con: valor	
+	"Modifica la cantidad de interacciones con un personaje jugador con el valor indicado"
+	
+	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: valor.
+! !
+
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:54:35'!
+obtenerCantidadDeInteraccionesDe: unPersonajeJugador	
+	"Retorna la cantidad de interacciones que se tiene con un personaje jugador"
+	
+	^cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador ifAbsent: [0].
+! !
+
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:54:38'!
 reiniciarCantidadDeInteraccionesDe: unPersonajeJugador	
+	"Vuelve a 0 la cantidad de interacciones con el personaje jugador."
+	
 	cantidadDeInteraccionesPorPersonaje at: unPersonajeJugador put: 0.
 ! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:04:26'!
-responderAJugadoresDesconocidosSegunCantidadDeInteracciones: cantidadDeInteracciones
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:58:58'!
+responderAJugadorDesconocidoSegunCantidadDeInteracciones: cantidadDeInteracciones
+	"Responde la frase correspondiente a un jugador con reputacion de Desconocido segun su cantidad de interacciones"
+	
 	^frasesParaResponderAPersonajesDesconocidos at: (cantidadDeInteracciones min: frasesParaResponderAPersonajesDesconocidos size).! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:04:38'!
-responderAJugadoresPrometedoresSegunCantidadDeInteracciones: cantidadDeInteracciones
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:59:07'!
+responderAJugadorPrometedorSegunCantidadDeInteracciones: cantidadDeInteracciones
+	"Responde la frase correspondiente a un jugador con reputacion de Prometedor segun su cantidad de interacciones"
+	
 	^frasesParaResponderAPersonajesPrometedores at: (cantidadDeInteracciones min: frasesParaResponderAPersonajesPrometedores size).! !
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/2/2021 23:05:14'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'interacciones - privado' stamp: 'PG 10/3/2021 21:59:25'!
 responderSegunCantidadDeInteraccionesCon: unPersonajeJugador
+	"Responde al personaje jugador segun la cantidad de interacciones que haya tenido con el mismo."
+	
 	| cantidadInteracciones |
 	cantidadInteracciones := cantidadDeInteraccionesPorPersonaje  at: unPersonajeJugador.	
 	
 	(PuebloDeRiverwood esPersonajePrometedor: unPersonajeJugador) ifTrue:  [
-		^self responderAJugadoresPrometedoresSegunCantidadDeInteracciones: cantidadInteracciones.]
+		^self responderAJugadorPrometedorSegunCantidadDeInteracciones: cantidadInteracciones.]
 	ifFalse: [		
-		^self responderAJugadoresDesconocidosSegunCantidadDeInteracciones: cantidadInteracciones.].! !
+		^self responderAJugadorDesconocidoSegunCantidadDeInteracciones: cantidadInteracciones.].! !
 
 
-!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'PG 10/2/2021 23:53:40'!
+!TreborElGuardiaDeSkyrim class methodsFor: 'as yet unclassified' stamp: 'PG 10/3/2021 22:08:41'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
