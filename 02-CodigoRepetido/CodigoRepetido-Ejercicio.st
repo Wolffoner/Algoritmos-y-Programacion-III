@@ -21,95 +21,10 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 18:04:36'!
-canNotSuspendCustomer: unBloque
-	
-	| customerBook johnLennon customerToBeSuspended|
-			
-	customerBook := CustomerBook new.
-	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
-	
-	unBloque value ifTrue: [ customerToBeSuspended := 'Ringo Starr'] 
-				ifFalse: [ customerToBeSuspended := 'John Lennon'. customerBook suspendCustomerNamed: customerToBeSuspended.].
-	
-	[ customerBook suspendCustomerNamed: customerToBeSuspended.
-	self fail ]
-		on: CantSuspend 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ].
-! !
-
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 16:39:22'!
-invalidModifications
-	
-	| customerBook johnLennon |
-			
-	customerBook := CustomerBook new.
-	
-	johnLennon := 'John Lennon'.
-	customerBook addCustomerNamed: johnLennon.
-	
-	[ customerBook removeCustomerNamed: 'Paul McCartney'.
-	self fail ]
-		on: NotFound 
-		do: [ :anError | 
-			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
-
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 15:38:45'!
-modificationTimeCalculationOfCustomerBook: unBloque
-
-	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney timeLimit|
-	
-	customerBook := CustomerBook new.
-	
-	unBloque value ifTrue: [timeLimit := 50] ifFalse:[paulMcCartney := 'Paul McCartney'.
-	customerBook addCustomerNamed: paulMcCartney. timeLimit := 100].
-	
-	millisecondsBeforeRunning := Time millisecondClockValue * millisecond.
-	unBloque value ifTrue: [customerBook addCustomerNamed: 'John Lennon'.]
-	ifFalse: [customerBook removeCustomerNamed: paulMcCartney.].
-	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
-	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (timeLimit * millisecond)
-	
-! !
-
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 17:47:30'!
-notRemoveItFromCustomerBook: unBloque
-
-	| customerBook paulMcCartney numberOfCustomersExpected|
-	
-	customerBook := CustomerBook new.
-	paulMcCartney := 'Paul McCartney'.
-	
-	customerBook addCustomerNamed: paulMcCartney.
-	customerBook suspendCustomerNamed: paulMcCartney.
-	
-	unBloque value ifTrue: [ numberOfCustomersExpected := 1] ifFalse: [numberOfCustomersExpected := 0. 
-					   customerBook removeCustomerNamed: paulMcCartney.].
-	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: numberOfCustomersExpected equals: customerBook numberOfSuspendedCustomers.
-	self assert: numberOfCustomersExpected equals: customerBook numberOfCustomers.
-	
-	unBloque value ifTrue: [self assert: (customerBook includesCustomerNamed: paulMcCartney).]
-				ifFalse: [self deny: (customerBook includesCustomerNamed: paulMcCartney).].
-	
-
-	
-! !
-
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 15:26:54'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:19'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
-	^self modificationTimeCalculationOfCustomerBook: [true].
 
-
-
-	"| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
+	| customerBook millisecondsBeforeRunning millisecondsAfterRunning |
 	
 	customerBook := CustomerBook new.
 	
@@ -117,15 +32,14 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	customerBook addCustomerNamed: 'John Lennon'.
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (50 * millisecond)"
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (50 * millisecond)
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 15:39:55'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:13'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
-	^self modificationTimeCalculationOfCustomerBook: [false].
 
-	"| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
+	| customerBook millisecondsBeforeRunning millisecondsAfterRunning paulMcCartney |
 	
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
@@ -136,7 +50,7 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	customerBook removeCustomerNamed: paulMcCartney.
 	millisecondsAfterRunning := Time millisecondClockValue * millisecond.
 	
-	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (100 * millisecond)"
+	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < (100 * millisecond)
 	
 ! !
 
@@ -171,12 +85,10 @@ test04CanNotRemoveAnInvalidCustomer
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 17:38:39'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:25'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
-	^self notRemoveItFromCustomerBook: [true].
 
-
-	"| customerBook paulMcCartney|
+	| customerBook paulMcCartney|
 	
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
@@ -187,18 +99,16 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	self assert: 0 equals: customerBook numberOfActiveCustomers.
 	self assert: 1 equals: customerBook numberOfSuspendedCustomers.
 	self assert: 1 equals: customerBook numberOfCustomers.
-	
-	self assert: (customerBook includesCustomerNamed: paulMcCartney)."
+	self assert: (customerBook includesCustomerNamed: paulMcCartney).
 	
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 17:38:52'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/3/2019 10:50:28'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
-	^self notRemoveItFromCustomerBook: [false].
 
-	"| customerBook paulMcCartney|
+	| customerBook paulMcCartney|
 	
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
@@ -210,17 +120,16 @@ test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
 	self assert: 0 equals: customerBook numberOfActiveCustomers.
 	self assert: 0 equals: customerBook numberOfSuspendedCustomers.
 	self assert: 0 equals: customerBook numberOfCustomers.
-	self deny: (customerBook includesCustomerNamed: paulMcCartney)."
+	self deny: (customerBook includesCustomerNamed: paulMcCartney).
 
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 18:05:44'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 4/30/2020 09:08:46'!
 test07CanNotSuspendAnInvalidCustomer
-	^self canNotSuspendCustomer: [true].
 	
-	"| customerBook johnLennon |
+	| customerBook johnLennon |
 			
 	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
@@ -231,14 +140,13 @@ test07CanNotSuspendAnInvalidCustomer
 		on: CantSuspend 
 		do: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]"
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'AR 10/9/2021 18:07:04'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'NR 9/19/2018 17:57:11'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
-	^self canNotSuspendCustomer: [false].
 	
-	"| customerBook johnLennon |
+	| customerBook johnLennon |
 			
 	customerBook := CustomerBook new.
 	johnLennon := 'John Lennon'.
@@ -250,7 +158,7 @@ test08CanNotSuspendAnAlreadySuspendedCustomer
 		on: CantSuspend 
 		do: [ :anError | 
 			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]"
+			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
 
