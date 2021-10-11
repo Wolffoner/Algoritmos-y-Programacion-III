@@ -81,46 +81,46 @@ test04CanNotRemoveAnInvalidCustomer
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/10/2021 22:15:50'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/11/2021 01:40:27'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
-	^self notRemoveItFromCustomerBook: 'Suspended'.
-
-
-	"| customerBook paulMcCartney|
+	| customerBook paulMcCartney methodsToTest asserts |
 	
 	customerBook := CustomerBook new.
-	paulMcCartney := 'Paul McCartney'.
+	methodsToTest := OrderedCollection new.
+	asserts := #(0 1 1 true).
 	
+	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 1 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 1 equals: customerBook numberOfCustomers.
+	"loads methods to test in a ordered collection"
+	self loadMethodsOf: customerBook inCollection: methodsToTest with: paulMcCartney.
 	
-	self assert: (customerBook includesCustomerNamed: paulMcCartney)."
+	"run all tests"
+	self testMethodsInCollection: methodsToTest with: asserts.	
 	
 
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/10/2021 22:23:20'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/11/2021 01:39:04'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
-	^self notRemoveItFromCustomerBook: 'Removing'.
-
-	"| customerBook paulMcCartney|
+	| customerBook paulMcCartney methodsToTest asserts |
 	
 	customerBook := CustomerBook new.
-	paulMcCartney := 'Paul McCartney'.
+	methodsToTest := OrderedCollection new.
+	asserts := #(0 0 0 false).
 	
+	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
 	
-	self assert: 0 equals: customerBook numberOfActiveCustomers.
-	self assert: 0 equals: customerBook numberOfSuspendedCustomers.
-	self assert: 0 equals: customerBook numberOfCustomers.
-	self deny: (customerBook includesCustomerNamed: paulMcCartney)."
+	"load methods to Test in a OrderedCollection"
+	self loadMethodsOf: customerBook inCollection: methodsToTest with: paulMcCartney.
+	
+	"run all tests"
+	self testMethodsInCollection: methodsToTest with: asserts
 
 
 	
@@ -212,35 +212,21 @@ invalidModifications
 			self assert: (customerBook includesCustomerNamed: johnLennon) ]
 ! !
 
-!CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/10/2021 23:13:49'!
-notRemoveItFromCustomerBook: aMethod
+!CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/11/2021 01:21:28'!
+loadMethodsOf: customerBook inCollection: methodsToTest with: aCustomer.
+	methodsToTest add: [customerBook numberOfActiveCustomers].
+	methodsToTest add: [customerBook numberOfSuspendedCustomers].
+	methodsToTest add: [customerBook numberOfCustomers].
+	methodsToTest add: [customerBook includesCustomerNamed: aCustomer].! !
 
-	| customerBook paulMcCartney asserts includesCustomer |
-	
-	customerBook := CustomerBook new.
-	"cambiar nombres"
-	includesCustomer:= Dictionary  new.
-	asserts := Dictionary new.
-	asserts at: 'Suspended' put: #(0 1 1).
-	asserts at: 'Removing' put: #(0 0 0).
-	
-	paulMcCartney := 'Paul McCartney'.
-	customerBook addCustomerNamed: paulMcCartney.
-	customerBook suspendCustomerNamed: paulMcCartney.
-	(aMethod = 'Removing') ifTrue: [customerBook removeCustomerNamed: paulMcCartney.].
-	
-	includesCustomer at: 'Suspended' put: [self assert: (customerBook includesCustomerNamed: paulMcCartney)].	
-	includesCustomer at: 'Removing' put: [self deny: (customerBook includesCustomerNamed: paulMcCartney)].
-	
-	self assert: [[asserts at: aMethod] value at: 1] value equals: customerBook numberOfActiveCustomers.
-	self assert: [[asserts at: aMethod] value at: 2] value equals: customerBook numberOfSuspendedCustomers.
-	self assert: [[asserts at: aMethod] value at: 3] value equals: customerBook numberOfCustomers.
-	
-	includesCustomer at: aMethod value.
-	
+!CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/11/2021 01:33:37'!
+testCustomerBookWith: aMethod with: assert
+	self assert: assert equals: aMethod value.! !
 
-	
-! !
+!CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/11/2021 01:37:26'!
+testMethodsInCollection: methodsToTest with: asserts
+	1 to: methodsToTest size value do: [ :index |
+		self testCustomerBookWith: [methodsToTest at: index] value with: [asserts at: index] value.].! !
 
 !CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/11/2021 00:06:02'!
 verifyTimeOf: aCustomerBookMethod for: aCustomer isLessThan: MaximumTime
