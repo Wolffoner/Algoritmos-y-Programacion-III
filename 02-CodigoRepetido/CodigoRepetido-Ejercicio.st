@@ -21,7 +21,7 @@ TestCase subclass: #CustomerBookTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!CustomerBookTest methodsFor: 'helper-methods' stamp: 'LWC 10/13/2021 23:34:03'!
+!CustomerBookTest methodsFor: 'helper-methods' stamp: 'PG 10/14/2021 17:42:26'!
 execute: aCustomerBookActionThatWillFail using: aCustomerBook with: anException
 	| johnLennon | 
 	johnLennon := 'John Lennon'.
@@ -60,8 +60,9 @@ verifyTimeOf: aCustomerBookAction isLessThan: anEstimatedTime
 	self assert: (millisecondsAfterRunning-millisecondsBeforeRunning) < anEstimatedTime.! !
 
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:31:04'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:46:53'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
+	"Verifies if an action (adding a customer) takes less than an established time (50 miliseconds)"
 	
 	|customerBook aCustomer aTime aCustomerBookAction |
 	
@@ -70,14 +71,14 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	
 	aCustomerBookAction := [customerBook addCustomerNamed: aCustomer].
 	aTime := 50 * millisecond.
-	
-	"Verify if aClojure run is less than a time."
+			
 	^self verifyTimeOf: aCustomerBookAction isLessThan: aTime
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:31:56'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:46:45'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
+	"Verifies if an action (removing a customer) takes less than an established time (100 milliseconds)"
 
 	|customerBook aCustomer aTime aCustomerBookAction |
 	
@@ -86,22 +87,21 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	customerBook addCustomerNamed: aCustomer.
 	
 	aCustomerBookAction := [customerBook removeCustomerNamed: aCustomer].
-	aTime := 100 * millisecond.
+	aTime := 100 * millisecond.		
 	
-	"Verify if a Clojure run is less than a time."
 	^self verifyTimeOf: aCustomerBookAction isLessThan: aTime.
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:48:17'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:54:13'!
 test03CanNotAddACustomerWithEmptyName 
+	"Executes an invalid action (adding a customer with an empty name) with an exception (Error), and asserts that the customer book remains empty"
 
 	| customerBook |
 			
 	customerBook := CustomerBook new.
-	
-	 "Segun nuestro criterio en este test no es necesario aplicar el algoritmo para quitar el codigo repetido, consideramos que al aplicarlo en distintos asserts(test04, test07, test08) complejizamos nuestra solucion lo que lo hace menos legible."
-
+		
+	"Segun nuestro criterio en este test no es necesario aplicar el algoritmo para quitar el codigo repetido, consideramos que al realizar distintos asserts (test04, test07, test08) complejizariamos nuestra solucion haciendolo menos legible."
 	[ customerBook addCustomerNamed: ''.
 	self fail ]
 		on: Error 
@@ -109,8 +109,9 @@ test03CanNotAddACustomerWithEmptyName
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
 			self assert: customerBook isEmpty ]! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:11:46'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:49:22'!
 test04CanNotRemoveAnInvalidCustomer
+	"Executes an invalid action (removing a customer that doesnt exist on the book) with an exception (NotFound), and asserts that the customer book remains unchanged"
 	
 	| aCustomerBook johnLennon anException aCustomerBookActionThatWillFail |
 			
@@ -123,21 +124,22 @@ test04CanNotRemoveAnInvalidCustomer
 	self execute: aCustomerBookActionThatWillFail using: aCustomerBook with: anException.
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:26:22'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:52:22'!
 test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
+	"Suspends a customer and verifies that the amount of active, suspended and total customers on the customer book remains the same"
 
-	| paulMcCartney anExpectedQuantityofActiveCustomers anExpectedQuantityofSuspendedCustomers anExpectedQuantityofTotalCustomers anExpectedCustomerIncludedInCustomerBook aCustomerBook |
-
-	anExpectedQuantityofActiveCustomers := 0.
-	anExpectedQuantityofSuspendedCustomers := 1.
-	anExpectedQuantityofTotalCustomers := 1.
-	anExpectedCustomerIncludedInCustomerBook := true.
+	| paulMcCartney anExpectedQuantityofActiveCustomers anExpectedQuantityofSuspendedCustomers anExpectedQuantityofTotalCustomers anExpectedCustomerIncludedInCustomerBook aCustomerBook |	
 			
 	aCustomerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	aCustomerBook addCustomerNamed: paulMcCartney.
 	aCustomerBook suspendCustomerNamed: paulMcCartney.
+	
+	anExpectedQuantityofActiveCustomers := 0.
+	anExpectedQuantityofSuspendedCustomers := 1.
+	anExpectedQuantityofTotalCustomers := 1.
+	anExpectedCustomerIncludedInCustomerBook := true.
 		
 	self verifyQuantityOfCustomersFrom: aCustomerBook with: anExpectedQuantityofActiveCustomers with: anExpectedQuantityofSuspendedCustomers  with: 	anExpectedQuantityofTotalCustomers andVerifyIf: anExpectedCustomerIncludedInCustomerBook.
 
@@ -146,33 +148,31 @@ test05SuspendingACustomerShouldNotRemoveItFromCustomerBook
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:25:10'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:53:06'!
 test06RemovingASuspendedCustomerShouldRemoveItFromCustomerBook
+	"Removes a suspended customer and verifies that the amount of active, suspended and total customers on the customer book remains the same"
 
 	| customerBook paulMcCartney anExpectedQuantityofActiveCustomers anExpectedQuantityofSuspendedCustomers anExpectedQuantityofTotalCustomers anExpectedCustomerIncludedInCustomerBook |
-	
-	anExpectedQuantityofActiveCustomers := 0.
-	anExpectedQuantityofSuspendedCustomers := 0.
-	anExpectedQuantityofTotalCustomers := 0.
-	anExpectedCustomerIncludedInCustomerBook:= false.
-			
+					
 	customerBook := CustomerBook new.
 	paulMcCartney := 'Paul McCartney'.
 	
 	customerBook addCustomerNamed: paulMcCartney.
 	customerBook suspendCustomerNamed: paulMcCartney.
 	customerBook removeCustomerNamed: paulMcCartney.
+	
+	anExpectedQuantityofActiveCustomers := 0.
+	anExpectedQuantityofSuspendedCustomers := 0.
+	anExpectedQuantityofTotalCustomers := 0.
+	anExpectedCustomerIncludedInCustomerBook:= false.
 
 	self verifyQuantityOfCustomersFrom: customerBook with: anExpectedQuantityofActiveCustomers with: anExpectedQuantityofSuspendedCustomers  with: 		anExpectedQuantityofTotalCustomers andVerifyIf: anExpectedCustomerIncludedInCustomerBook.
-
-
-	
-
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:08:39'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:49:10'!
 test07CanNotSuspendAnInvalidCustomer
+	"Executes an invalid action (suspending a customer that doesnt exist on the book) with an exception (CantSuspend), and asserts that the customer book remains unchanged"
 	
 	| johnLennon anException aCustomerBook aCustomerBookActionThatWillFail  |
 			
@@ -186,8 +186,9 @@ test07CanNotSuspendAnInvalidCustomer
 	
 ! !
 
-!CustomerBookTest methodsFor: 'tests' stamp: 'LWC 10/13/2021 23:11:03'!
+!CustomerBookTest methodsFor: 'tests' stamp: 'PG 10/14/2021 17:49:00'!
 test08CanNotSuspendAnAlreadySuspendedCustomer
+	"Executes an invalid action (suspending a customer that was already suspended) with an exception (CantSuspend), and asserts that the customer book remains unchanged"
 	
 	| johnLennon anException aCustomerBook aCustomerBookActionThatWillFail |
 			
