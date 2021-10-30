@@ -1,4 +1,4 @@
-!classDefinition: #OOStackTest category: #'Stack-Exercise'!
+!classDefinition: #OOStackTest category: 'Stack-Exercise'!
 TestCase subclass: #OOStackTest
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -35,7 +35,7 @@ test03PopRemovesElementsFromTheStack
 	
 	self assert: stack isEmpty! !
 
-!OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:09'!
+!OOStackTest methodsFor: 'test' stamp: 'LWC 10/29/2021 23:27:09'!
 test04PopReturnsLastPushedObject
 
 	| stack pushedObject |
@@ -44,7 +44,7 @@ test04PopReturnsLastPushedObject
 	pushedObject := 'something'.
 	stack push: pushedObject.
 	
-	self assert: stack pop = pushedObject! !
+	self assert: stack pop = pushedObject.! !
 
 !OOStackTest methodsFor: 'test' stamp: 'NR 5/13/2020 13:30:48'!
 test05StackBehavesLIFO
@@ -137,7 +137,7 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 ! !
 
 
-!classDefinition: #SentenceFinderByPrefixTest category: #'Stack-Exercise'!
+!classDefinition: #SentenceFinderByPrefixTest category: 'Stack-Exercise'!
 TestCase subclass: #SentenceFinderByPrefixTest
 	instanceVariableNames: ''
 	classVariableNames: ''
@@ -145,16 +145,51 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	category: 'Stack-Exercise'!
 
 
-!classDefinition: #OOStack category: #'Stack-Exercise'!
+!classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: ''
+	instanceVariableNames: 'stack top'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:11:28'!
+initialize
+	stack := Array new: 10.
+	top:= 1.
+	! !
+
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:11:33'!
+isEmpty
+	(top = 1) 
+		ifTrue: [^true] 
+		ifFalse:[^false].! !
+
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:38:15'!
+pop
+	"Arreglar"
+	|removed|
+	(stack isEmpty) ifTrue: [^self error: OOStack stackEmptyErrorDescription].
+	removed := stack at: top - 1.
+	top := top - 1.
+	^removed.! !
+
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:08:00'!
+push: anElement
+	stack at: top put: anElement.
+	top := top + 1.! !
+
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:31:33'!
+size
+	^top-1.! !
+
+!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:29:36'!
+top
+	^stack at: top-1.
+! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'OOStack class' category: #'Stack-Exercise'!
+!classDefinition: 'OOStack class' category: 'Stack-Exercise'!
 OOStack class
 	instanceVariableNames: ''!
 
@@ -164,7 +199,7 @@ stackEmptyErrorDescription
 	^ 'Stack is empty'! !
 
 
-!classDefinition: #SentenceFinderByPrefix category: #'Stack-Exercise'!
+!classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
 	instanceVariableNames: ''
 	classVariableNames: ''
