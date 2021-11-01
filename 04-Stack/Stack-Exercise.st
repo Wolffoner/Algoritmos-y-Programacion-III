@@ -91,7 +91,7 @@ test07TopDoesNotRemoveObjectFromStack
 	self assert: stack size = 1.
 	! !
 
-!OOStackTest methodsFor: 'test' stamp: 'HAW 4/14/2017 22:48:26'!
+!OOStackTest methodsFor: 'test' stamp: 'LWC 11/1/2021 14:12:56'!
 test08CanNotPopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
@@ -136,6 +136,7 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 		
 ! !
 
+
 
 !classDefinition: #SentenceFinderByPrefixTest category: 'Stack-Exercise'!
 TestCase subclass: #SentenceFinderByPrefixTest
@@ -147,45 +148,50 @@ TestCase subclass: #SentenceFinderByPrefixTest
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'stack top'
+	instanceVariableNames: 'stack'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:11:28'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:44:47'!
+isEmpty
+	^stack isEmpty.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 14:12:33'!
+pop
+	^self popIfAbsent: [self error: OOStack stackEmptyErrorDescription].
+	
+	"
+	(stack isEmpty) ifTrue: [^self error: OOStack stackEmptyErrorDescription].
+	^stack removeLast."! !
+
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:51:23'!
+push: anElement
+	stack addLast: anElement.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:51:35'!
+size
+	^stack size.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 14:24:21'!
+top
+	^self topValueIfAbsent: [self error: OOStack stackEmptyErrorDescription].
+! !
+
+
+!OOStack methodsFor: 'initialization' stamp: 'LWC 11/1/2021 13:44:02'!
 initialize
-	stack := Array new: 10.
-	top:= 1.
+	stack := OrderedCollection new.
 	! !
 
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:11:33'!
-isEmpty
-	(top = 1) 
-		ifTrue: [^true] 
-		ifFalse:[^false].! !
 
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:38:15'!
-pop
-	"Arreglar"
-	|removed|
-	(stack isEmpty) ifTrue: [^self error: OOStack stackEmptyErrorDescription].
-	removed := stack at: top - 1.
-	top := top - 1.
-	^removed.! !
+!OOStack methodsFor: 'accesing - private' stamp: 'LWC 11/1/2021 14:22:19'!
+popIfAbsent: aBlock
+	^stack remove: (self topValueIfAbsent: aBlock) ifAbsent: aBlock. ! !
 
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:08:00'!
-push: anElement
-	stack at: top put: anElement.
-	top := top + 1.! !
-
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:31:33'!
-size
-	^top-1.! !
-
-!OOStack methodsFor: 'as yet unclassified' stamp: 'LWC 10/29/2021 23:29:36'!
-top
-	^stack at: top-1.
-! !
+!OOStack methodsFor: 'accesing - private' stamp: 'LWC 11/1/2021 14:21:50'!
+topValueIfAbsent: aBlock
+	^stack at: stack size ifAbsent: aBlock.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
