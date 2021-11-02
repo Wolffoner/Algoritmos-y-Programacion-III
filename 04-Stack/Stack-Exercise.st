@@ -122,7 +122,7 @@ test09CanNotPopWhenThereAreNoObjectsInTheStackAndTheStackHadObjects
 		
 ! !
 
-!OOStackTest methodsFor: 'test' stamp: 'HAW 4/14/2017 22:48:44'!
+!OOStackTest methodsFor: 'test' stamp: 'LWC 11/1/2021 21:08:40'!
 test10CanNotTopWhenThereAreNoObjectsInTheStack
 
 	| stack  |
@@ -132,10 +132,9 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 		should: [ stack top ]
 		raise: Error - MessageNotUnderstood 
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = OOStack stackEmptyErrorDescription ]
+			self assert: anError messageText equals: OOStack stackEmptyErrorDescription ]
 		
 ! !
-
 
 
 !classDefinition: #SentenceFinderByPrefixTest category: 'Stack-Exercise'!
@@ -148,50 +147,49 @@ TestCase subclass: #SentenceFinderByPrefixTest
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
-	instanceVariableNames: 'stack'
+	instanceVariableNames: 'stack status'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:44:47'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 20:39:24'!
 isEmpty
-	^stack isEmpty.! !
+	^status obtainStatus.! !
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 14:12:33'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 21:06:42'!
+lastValue
+	^stack at: self size.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 19:41:09'!
 pop
 	^self popIfAbsent: [self error: OOStack stackEmptyErrorDescription].
-	
-	"
-	(stack isEmpty) ifTrue: [^self error: OOStack stackEmptyErrorDescription].
-	^stack removeLast."! !
+	! !
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:51:23'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 20:45:05'!
 push: anElement
+	(stack isEmpty) ifTrue: [status := status modifyStatus].
 	stack addLast: anElement.! !
 
 !OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:51:35'!
 size
 	^stack size.! !
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 14:24:21'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 21:02:46'!
 top
-	^self topValueIfAbsent: [self error: OOStack stackEmptyErrorDescription].
+	^status obtainTopeOf: self.
 ! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'LWC 11/1/2021 13:44:02'!
+!OOStack methodsFor: 'initialization' stamp: 'LWC 11/1/2021 20:31:55'!
 initialize
 	stack := OrderedCollection new.
+	status := StackStatusEmpty new.
 	! !
 
 
 !OOStack methodsFor: 'accesing - private' stamp: 'LWC 11/1/2021 14:22:19'!
 popIfAbsent: aBlock
 	^stack remove: (self topValueIfAbsent: aBlock) ifAbsent: aBlock. ! !
-
-!OOStack methodsFor: 'accesing - private' stamp: 'LWC 11/1/2021 14:21:50'!
-topValueIfAbsent: aBlock
-	^stack at: stack size ifAbsent: aBlock.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -203,6 +201,76 @@ OOStack class
 stackEmptyErrorDescription
 	
 	^ 'Stack is empty'! !
+
+
+!classDefinition: #OOStackStatus category: 'Stack-Exercise'!
+Object subclass: #OOStackStatus
+	instanceVariableNames: 'statusEmpty'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:26:59'!
+initialize
+	self subclassResponsibility.! !
+
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:24:10'!
+modifyStatus
+	self subclassResponsibility.! !
+
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:24:20'!
+obtainStatus
+	self subclassResponsibility.! !
+
+
+!classDefinition: #StackStatusEmpty category: 'Stack-Exercise'!
+OOStackStatus subclass: #StackStatusEmpty
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:30:32'!
+initialize
+	statusEmpty _ true.
+	! !
+
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:37:34'!
+modifyStatus
+	^StackStatusNotEmpty new.! !
+
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:40:23'!
+obtainStatus
+	^statusEmpty.! !
+
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 21:15:00'!
+obtainTopeOf: aStack.
+	^aStack error: aStack class stackEmptyErrorDescription.! !
+
+
+!classDefinition: #StackStatusNotEmpty category: 'Stack-Exercise'!
+OOStackStatus subclass: #StackStatusNotEmpty
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:30:43'!
+initialize
+	statusEmpty _ false.
+	! !
+
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:38:27'!
+modifyStatus
+	^StackStatusEmpty new.! !
+
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:40:18'!
+obtainStatus
+	^statusEmpty.! !
+
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 21:07:10'!
+obtainTopeOf: aStack
+	^aStack lastValue.! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
