@@ -152,23 +152,21 @@ Object subclass: #OOStack
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 20:39:24'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/3/2021 11:18:19'!
 isEmpty
-	^status obtainStatus.! !
+	^status isEmpty.! !
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 21:06:42'!
-lastValue
-	^stack at: self size.! !
-
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 19:41:09'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/3/2021 11:13:49'!
 pop
-	^self popIfAbsent: [self error: OOStack stackEmptyErrorDescription].
-	! !
+	| element |
+	element _ status removeTopeOf: self.
+	self defineStatus.
+	^element.! !
 
-!OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 20:45:05'!
+!OOStack methodsFor: 'accessing' stamp: 'LWC 11/3/2021 11:13:05'!
 push: anElement
-	(stack isEmpty) ifTrue: [status := status modifyStatus].
-	stack addLast: anElement.! !
+	stack addLast: anElement.
+	self defineStatus.! !
 
 !OOStack methodsFor: 'accessing' stamp: 'LWC 11/1/2021 13:51:35'!
 size
@@ -180,16 +178,24 @@ top
 ! !
 
 
-!OOStack methodsFor: 'initialization' stamp: 'LWC 11/1/2021 20:31:55'!
+!OOStack methodsFor: 'initialization' stamp: 'LWC 11/3/2021 11:13:05'!
 initialize
-	stack := OrderedCollection new.
-	status := StackStatusEmpty new.
-	! !
+	stack _ OrderedCollection new.
+	self defineStatus.! !
 
 
-!OOStack methodsFor: 'accesing - private' stamp: 'LWC 11/1/2021 14:22:19'!
-popIfAbsent: aBlock
-	^stack remove: (self topValueIfAbsent: aBlock) ifAbsent: aBlock. ! !
+!OOStack methodsFor: 'helpers' stamp: 'LWC 11/3/2021 11:13:05'!
+defineStatus
+	^status _ OOStackStatus newWith: self size.
+! !
+
+!OOStack methodsFor: 'helpers' stamp: 'LWC 11/1/2021 21:06:42'!
+lastValue
+	^stack at: self size.! !
+
+!OOStack methodsFor: 'helpers' stamp: 'LWC 11/3/2021 10:45:57'!
+removeLastValue
+	^stack removeLast.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -205,22 +211,38 @@ stackEmptyErrorDescription
 
 !classDefinition: #OOStackStatus category: 'Stack-Exercise'!
 Object subclass: #OOStackStatus
-	instanceVariableNames: 'statusEmpty'
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:26:59'!
-initialize
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:35:22'!
+isEmpty
 	self subclassResponsibility.! !
 
-!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:24:10'!
-modifyStatus
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 11:12:25'!
+obtainTopeOf: aStack.
 	self subclassResponsibility.! !
 
-!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:24:20'!
-obtainStatus
+!OOStackStatus methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 11:11:50'!
+removeTopeOf: aStack.
 	self subclassResponsibility.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'OOStackStatus class' category: 'Stack-Exercise'!
+OOStackStatus class
+	instanceVariableNames: ''!
+
+!OOStackStatus class methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 11:17:16'!
+canInstanceWith: aSize
+	self subclassResponsibility.! !
+
+!OOStackStatus class methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:38:53'!
+newWith: Size
+	| subclass |
+	subclass _ self subclasses detect:  [ :aSubClass | aSubClass  canInstanceWith: Size].
+	^subclass new.! !
 
 
 !classDefinition: #StackStatusEmpty category: 'Stack-Exercise'!
@@ -230,22 +252,28 @@ OOStackStatus subclass: #StackStatusEmpty
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:30:32'!
-initialize
-	statusEmpty _ true.
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:36:03'!
+isEmpty
+	^true.
 	! !
-
-!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:37:34'!
-modifyStatus
-	^StackStatusNotEmpty new.! !
-
-!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:40:23'!
-obtainStatus
-	^statusEmpty.! !
 
 !StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 21:15:00'!
 obtainTopeOf: aStack.
 	^aStack error: aStack class stackEmptyErrorDescription.! !
+
+!StackStatusEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 11:10:41'!
+removeTopeOf: aStack
+	^aStack error: aStack class stackEmptyErrorDescription.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'StackStatusEmpty class' category: 'Stack-Exercise'!
+StackStatusEmpty class
+	instanceVariableNames: ''!
+
+!StackStatusEmpty class methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:31:17'!
+canInstanceWith: aSize
+	^ aSize = 0.! !
 
 
 !classDefinition: #StackStatusNotEmpty category: 'Stack-Exercise'!
@@ -255,22 +283,28 @@ OOStackStatus subclass: #StackStatusNotEmpty
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
-!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:30:43'!
-initialize
-	statusEmpty _ false.
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:36:43'!
+isEmpty
+	^false.
 	! !
-
-!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:38:27'!
-modifyStatus
-	^StackStatusEmpty new.! !
-
-!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 20:40:18'!
-obtainStatus
-	^statusEmpty.! !
 
 !StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/1/2021 21:07:10'!
 obtainTopeOf: aStack
 	^aStack lastValue.! !
+
+!StackStatusNotEmpty methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 11:11:09'!
+removeTopeOf: aStack
+	^aStack removeLastValue.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'StackStatusNotEmpty class' category: 'Stack-Exercise'!
+StackStatusNotEmpty class
+	instanceVariableNames: ''!
+
+!StackStatusNotEmpty class methodsFor: 'as yet unclassified' stamp: 'LWC 11/3/2021 10:31:47'!
+canInstanceWith: aSize
+	^ aSize > 0.! !
 
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
