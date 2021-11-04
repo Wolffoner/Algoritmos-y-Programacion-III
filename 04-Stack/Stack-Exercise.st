@@ -144,6 +144,137 @@ TestCase subclass: #SentenceFinderByPrefixTest
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
 
+!SentenceFinderByPrefixTest methodsFor: 'setup' stamp: 'LWC 11/3/2021 23:59:25'!
+setUp
+
+	! !
+
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:43:56'!
+test01SentenceFinderCanFindAPrefixOnAStackEmpty
+
+	| stack sentenceFinder prefix|
+	
+	stack _ OOStack new.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'Something'.
+	
+	self assert: (sentenceFinder find: prefix in: stack) size equals: 0.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 22:46:49'!
+test02SentenceFinderCanFindAPrefixOnAStackNotEmpty
+
+	| stack sentenceFinder prefix|
+	
+	stack _ OOStack new.
+	stack push: 'test1'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'Something'.
+	
+	self assert: (sentenceFinder find: prefix in: stack) size equals: 0.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:22:31'!
+test03SentenceFinderFindAStringWithPrefixOnAStack
+
+	| stack sentenceFinder sentences prefix|
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'Something'.
+	sentences := sentenceFinder find: prefix in: stack.
+	
+	self assert: sentences size equals: 1.
+	self assert: (sentences at: 1) equals: 'Something test1'.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:29:37'!
+test04SentenceFinderFindVariousStringsWithAPrefixOnAStack
+
+	| stack sentenceFinder sentences prefix|
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	stack push: 'Something test2'.
+	stack push: 'something test3'.
+	stack push: 'Something test4'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'Some'.
+	sentences := sentenceFinder find: prefix in: stack.
+	
+	self assert: sentences size equals: 3.
+	self assert: (sentences at: 1) equals: 'Something test4'.
+	self assert: (sentences at: 2) equals: 'Something test2'.
+	self assert: (sentences at: 3) equals: 'Something test1'.
+	! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:29:47'!
+test05SentenceFinderFindStringAndStackMaintainOrder
+
+	| stack sentenceFinder prefix|
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	stack push: 'Something test2'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'Some'.
+
+	sentenceFinder find: prefix in: stack.
+	
+	self assert: stack size equals: 2.
+	self assert: stack pop equals: 'Something test2'.
+	self assert: stack pop equals: 'Something test1'.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:42:43'!
+test06SentenceFinderFindWithAPrefixInAStackRespectCaseSensitive
+
+	| stack sentenceFinder prefix sentences |
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	stack push: 'Something test2'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'some'.
+
+	sentences _ sentenceFinder find: prefix in: stack.
+	
+	self assert: sentences size equals: 0.! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/3/2021 23:46:21'!
+test07SentenceFinderCanNotFindInAStackIfPrefixIsEmpty
+
+	| stack sentenceFinder prefix |
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	stack push: 'Something test2'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ ''.
+	
+	self
+		should: [ sentenceFinder find: prefix in: stack. ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = SentenceFinderByPrefix PrefixEmptyErrorDescription].
+		! !
+
+!SentenceFinderByPrefixTest methodsFor: 'testing' stamp: 'LWC 11/4/2021 00:02:22'!
+test08SentenceFinderCanNotFindInAStackIfPrefixContainSpaces
+
+	| stack sentenceFinder prefix |
+	
+	stack _ OOStack new.
+	stack push: 'Something test1'.
+	stack push: 'Something test2'.
+	sentenceFinder _ SentenceFinderByPrefix new.
+	prefix _ 'some thing'.
+	
+	self
+		should: [ sentenceFinder find: prefix in: stack. ]
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = SentenceFinderByPrefix PrefixIncludeSpacesErrorDescription].
+		! !
+
 
 !classDefinition: #OOStack category: 'Stack-Exercise'!
 Object subclass: #OOStack
@@ -309,7 +440,46 @@ canInstanceWith: aSize
 
 !classDefinition: #SentenceFinderByPrefix category: 'Stack-Exercise'!
 Object subclass: #SentenceFinderByPrefix
-	instanceVariableNames: ''
+	instanceVariableNames: 'sentencesWithAPrefix'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+
+!SentenceFinderByPrefix methodsFor: 'accessing' stamp: 'LWC 11/3/2021 23:55:20'!
+find: aPrefix in: aStack
+	|auxiliarStack currentString |
+	
+	(aPrefix = '') ifTrue: [	^self error: self class PrefixEmptyErrorDescription.]. 
+	(aPrefix includes: $ ) ifTrue: [^self error: self class PrefixIncludeSpacesErrorDescription].
+	
+	auxiliarStack _ OOStack new.
+	aStack size timesRepeat: [
+			currentString  _ aStack pop.
+			auxiliarStack  push: currentString.
+			(currentString beginsWith: aPrefix) ifTrue: [sentencesWithAPrefix addLast: currentString].
+		].
+	auxiliarStack size timesRepeat: [
+		aStack push: auxiliarStack pop.
+		].
+	^sentencesWithAPrefix.! !
+
+!SentenceFinderByPrefix methodsFor: 'accessing' stamp: 'LWC 11/3/2021 22:45:41'!
+initialize
+	sentencesWithAPrefix _ OrderedCollection new.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'SentenceFinderByPrefix class' category: 'Stack-Exercise'!
+SentenceFinderByPrefix class
+	instanceVariableNames: ''!
+
+!SentenceFinderByPrefix class methodsFor: 'error handling' stamp: 'LWC 11/3/2021 23:39:46'!
+PrefixEmptyErrorDescription
+	
+	^ 'Prefix is empty'! !
+
+!SentenceFinderByPrefix class methodsFor: 'error handling' stamp: 'LWC 11/3/2021 23:51:01'!
+PrefixIncludeSpacesErrorDescription
+	
+	^ 'Prefix include spaces.'! !
