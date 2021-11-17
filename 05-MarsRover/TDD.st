@@ -129,12 +129,36 @@ test08AlInstanciarUnMarsRoversEnUnaCoordenadaYCardinalidadEspecificadaLoInstanci
 	self assert: marsRover coordenadasActuales equals: aPoint.
 	self assert: marsRover cardinalidadActual equals: aCardinality.! !
 
-!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/15/2021 16:15:45'!
-test09UnMarsRoverProcesaLosComandosQueLeHanEnviado
+!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/16/2021 20:56:04'!
+test09UnMarsRoverProcesaElComandoForwardYAvanazaHaciaAdelanteUnaPosicion
 
 	| comandoAEnviar marsRover coordenadasEsperadas |
-	comandoAEnviar _ 'fffb'.
-	coordenadasEsperadas _ (0 @ 2).
+	comandoAEnviar _ 'f'.
+	coordenadasEsperadas _ (0 @ 1).
+	marsRover _ MarsRover new.
+	
+	marsRover procesar: comandoAEnviar.
+	
+	self assert: marsRover coordenadasActuales equals: coordenadasEsperadas. ! !
+
+!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/16/2021 20:59:20'!
+test10UnMarsRoverProcesaVariosComandosValidosYAvanzaAUnaPosicion
+
+	| comandoAEnviar marsRover coordenadasEsperadas |
+	comandoAEnviar _ 'flb'.
+	coordenadasEsperadas _ (1 @ 1).
+	marsRover _ MarsRover new.
+	
+	marsRover procesar: comandoAEnviar.
+	
+	self assert: marsRover coordenadasActuales equals: coordenadasEsperadas. ! !
+
+!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/16/2021 21:00:47'!
+test11UnMarsRoverProcesaVariosComandosDejaDeMoverseCuandoHayaUnComandoInvalido
+
+	| comandoAEnviar marsRover coordenadasEsperadas |
+	comandoAEnviar _ 'fffxflb'.
+	coordenadasEsperadas _ (0 @ 3).
 	marsRover _ MarsRover new.
 	
 	marsRover procesar: comandoAEnviar.
@@ -377,20 +401,20 @@ cardinalidadActual
 coordenadasActuales
 	^coordenadas.! !
 
-!MarsRover methodsFor: 'accessing' stamp: 'LWC 11/15/2021 16:32:22'!
+!MarsRover methodsFor: 'accessing' stamp: 'LWC 11/16/2021 21:11:18'!
 procesar: unComando
-	1 to: unComando size do: [:index |  acciones at: (unComando at: index)].! !
+	1 to: unComando size do: [:index |  (acciones at: (unComando at: index) ifAbsent: [^true]) value ].! !
 
 
-!MarsRover methodsFor: 'initialization' stamp: 'LWC 11/15/2021 16:14:59'!
+!MarsRover methodsFor: 'initialization' stamp: 'LWC 11/16/2021 20:55:25'!
 initialize
 	coordenadas _ (0 @ 0).
 	ejeMarsRover _ EjeNorte new.
 	acciones _ Dictionary new.
-	acciones at: 'f' put: self moverHaciaAdelante.
-	acciones at: 'b' put: self moverHaciaAtras.
-	acciones at: 'l' put: self rotarALaIzquierda.
-	acciones at: 'r' put: self rotarALaDerecha.! !
+	acciones at: $f put: [self moverHaciaAdelante].
+	acciones at: $b put: [self moverHaciaAtras].
+	acciones at: $l put: [self rotarALaIzquierda].
+	acciones at: $r put: [self rotarALaDerecha].! !
 
 !MarsRover methodsFor: 'initialization' stamp: 'LWC 11/15/2021 16:30:04'!
 initializeWithCoordinates: aPoint andCardinality: aCardinality
