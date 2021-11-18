@@ -153,17 +153,35 @@ test10UnMarsRoverProcesaVariosComandosValidosYAvanzaAUnaPosicion
 	
 	self assert: marsRover coordenadasActuales equals: coordenadasEsperadas. ! !
 
-!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/16/2021 21:00:47'!
-test11UnMarsRoverProcesaVariosComandosDejaDeMoverseCuandoHayaUnComandoInvalido
+!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/18/2021 10:44:53'!
+test11UnMarsRoverProcesaVariosComandosEnviaUnErrorAlProcesar
+
+	| comandoAEnviar marsRover |
+	comandoAEnviar _ 'fffxflb'.
+	marsRover _ MarsRover new.
+	
+	self
+		should: [ marsRover procesar: comandoAEnviar]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = MarsRover ErrorCommandInvalidDescription].
+	! !
+
+!TestMarsRover methodsFor: 'as yet unclassified' stamp: 'LWC 11/18/2021 10:44:46'!
+test12UnMarsRoverProcesaVariosComandosDejaDeMoverseCuandoHayaUnComandoInvalido
 
 	| comandoAEnviar marsRover coordenadasEsperadas |
 	comandoAEnviar _ 'fffxflb'.
 	coordenadasEsperadas _ (0 @ 3).
 	marsRover _ MarsRover new.
-	
-	marsRover procesar: comandoAEnviar.
-	
-	self assert: marsRover coordenadasActuales equals: coordenadasEsperadas. ! !
+
+	self
+		should: [ marsRover procesar: comandoAEnviar]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = MarsRover ErrorCommandInvalidDescription.
+			self assert: coordenadasEsperadas equals: marsRover coordenadasActuales.
+			].! !
 
 
 !classDefinition: #EjeMarsRover category: 'TDD'!
@@ -401,9 +419,13 @@ cardinalidadActual
 coordenadasActuales
 	^coordenadas.! !
 
-!MarsRover methodsFor: 'accessing' stamp: 'LWC 11/16/2021 21:11:18'!
+!MarsRover methodsFor: 'accessing' stamp: 'LWC 11/18/2021 10:47:45'!
 procesar: unComando
-	1 to: unComando size do: [:index |  (acciones at: (unComando at: index) ifAbsent: [^true]) value ].! !
+	
+	1 to: unComando size do: [
+		:index |  
+		(acciones at: (unComando at: index) ifAbsent: [^ self error: self class ErrorCommandInvalidDescription ]) value 
+	].! !
 
 
 !MarsRover methodsFor: 'initialization' stamp: 'LWC 11/16/2021 20:55:25'!
@@ -416,15 +438,15 @@ initialize
 	acciones at: $l put: [self rotarALaIzquierda].
 	acciones at: $r put: [self rotarALaDerecha].! !
 
-!MarsRover methodsFor: 'initialization' stamp: 'LWC 11/15/2021 16:30:04'!
+!MarsRover methodsFor: 'initialization' stamp: 'LWC 11/18/2021 10:47:09'!
 initializeWithCoordinates: aPoint andCardinality: aCardinality
 	coordenadas _	aPoint.
 	ejeMarsRover _ aCardinality.
 	acciones _ Dictionary new.
-	acciones at: 'f' put: self moverHaciaAdelante.
-	acciones at: 'b' put: self moverHaciaAtras.
-	acciones at: 'l' put: self rotarALaIzquierda.
-	acciones at: 'r' put: self rotarALaDerecha.! !
+	acciones at: $f put: [self moverHaciaAdelante].
+	acciones at: $b put: [self moverHaciaAtras].
+	acciones at: $l put: [self rotarALaIzquierda].
+	acciones at: $r put: [self rotarALaDerecha].! !
 
 
 !MarsRover methodsFor: 'events' stamp: 'LWC 11/15/2021 16:03:17'!
@@ -445,44 +467,50 @@ rotarALaIzquierda
 	ejeMarsRover RotarALaIzquierda: self.! !
 
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:53:51'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:15'!
+desplazarMarsRoverEn: unaCoordenada
+	coordenadas _ coordenadas + unaCoordenada.
+! !
+
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:15'!
 moverAdelanteDesdeElEste
-	coordenadas _ coordenadas + (1 @ 0).
+	self desplazarMarsRoverEn: (1@0).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:53:15'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:15'!
 moverAdelanteDesdeElNorte
-	coordenadas _ coordenadas + (0 @ 1).
+	self desplazarMarsRoverEn: (0@1).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:54:12'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:15'!
 moverAdelanteDesdeElOeste
-	coordenadas _ coordenadas + (-1 @ 0).
+	self desplazarMarsRoverEn: (-1@0).
+
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:54:05'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:15'!
 moverAdelanteDesdeElSur
-	coordenadas _ coordenadas + (0 @ -1).
+	self desplazarMarsRoverEn: (0@-1).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:54:44'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:53:36'!
 moverAtrasDesdeElEste
-	coordenadas _ coordenadas + (-1 @ 0).
+	self desplazarMarsRoverEn: (-1@0).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:54:34'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:54:00'!
 moverAtrasDesdeElNorte
-	coordenadas _ coordenadas + (0 @ -1).
+	self desplazarMarsRoverEn: (0@-1).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:55:00'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:54:08'!
 moverAtrasDesdeElOeste
-	coordenadas _ coordenadas + (1 @ 0).
+	self desplazarMarsRoverEn: (1@0).
 ! !
 
-!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/15/2021 15:54:53'!
+!MarsRover methodsFor: 'private - movement' stamp: 'LWC 11/18/2021 10:54:21'!
 moverAtrasDesdeElSur
-	coordenadas _ coordenadas + (0 @ 1).
+	self desplazarMarsRoverEn: (0@1).
 ! !
 
 
@@ -531,6 +559,10 @@ rotarALaIzquierdaDesdeElSur
 !classDefinition: 'MarsRover class' category: 'TDD'!
 MarsRover class
 	instanceVariableNames: ''!
+
+!MarsRover class methodsFor: 'initialization' stamp: 'LWC 11/18/2021 10:26:55'!
+ErrorCommandInvalidDescription
+	^'Se envio un comando invalido por lo que no se realizaron todas las acciones especificadas.'! !
 
 !MarsRover class methodsFor: 'initialization' stamp: 'LWC 11/15/2021 15:48:33'!
 newWithCoordinates: aPoint andCardinalityTo: aCardinality
