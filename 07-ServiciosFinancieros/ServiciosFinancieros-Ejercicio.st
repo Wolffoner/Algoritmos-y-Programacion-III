@@ -89,6 +89,65 @@ test07AccountKnowsItsTransactions
 ! !
 
 
+!classDefinition: #TestXXX category: 'ServiciosFinancieros-Ejercicio'!
+TestCase subclass: #TestXXX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!TestXXX methodsFor: 'nil' stamp: 'LWC 11/24/2021 22:57:16'!
+test01
+	| portfolio |
+	portfolio _ Portfolio new.
+	self assert: 0*peso equals: portfolio balance.! !
+
+
+!TestXXX methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 23:00:10'!
+test02
+	| portfolio anAccount deposit |
+	portfolio _ Portfolio new.
+	anAccount _ ReceptiveAccount new.
+	deposit _ Deposit for: 100*peso.
+	anAccount register: deposit.
+	portfolio addAccount: anAccount.
+	self assert: 100*peso equals: portfolio balance.! !
+
+!TestXXX methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:39:02'!
+test03
+	| originAccount destinyAccount transfer |
+
+	originAccount _ ReceptiveAccount new.
+	destinyAccount _ ReceptiveAccount new.
+	transfer _ Transfer From: originAccount To: destinyAccount ForAnAMountOf: 100*peso.
+	
+	self assert: transfer withdrawValue equals: -100*peso.! !
+
+!TestXXX methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:39:07'!
+test04
+	| originAccount destinyAccount transfer |
+
+	originAccount _ ReceptiveAccount new.
+	destinyAccount _ ReceptiveAccount new.
+	transfer _ Transfer From: originAccount To: destinyAccount ForAnAMountOf: 100*peso.
+	
+	self assert: transfer depositValue equals: 100*peso.! !
+
+!TestXXX methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:39:24'!
+test05
+	| originAccount destinyAccount transfer |
+
+	originAccount _ ReceptiveAccount new.
+	destinyAccount _ ReceptiveAccount new.
+	transfer _ Transfer From: originAccount To: destinyAccount ForAnAMountOf: 100*peso.
+	
+	originAccount register: transfer.
+	destinyAccount  register: transfer.
+	
+	self assert: originAccount balance equals: -100*peso.
+	self assert: destinyAccount balance equals: 100*peso.! !
+
+
 !classDefinition: #AccountTransaction category: 'ServiciosFinancieros-Ejercicio'!
 Object subclass: #AccountTransaction
 	instanceVariableNames: ''
@@ -136,16 +195,79 @@ value
 
 	^ value! !
 
+
+!Deposit methodsFor: 'events-accessing' stamp: 'LWC 11/24/2021 19:34:10'!
+affectBalance
+	^ self value.! !
+
+!Deposit methodsFor: 'events-accessing' stamp: 'LWC 11/24/2021 22:34:25'!
+affectBalanceOfAnAccount: anAccount
+	^ self value.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'Deposit class' category: 'ServiciosFinancieros-Ejercicio'!
 Deposit class
 	instanceVariableNames: ''!
 
-!Deposit class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!Deposit class methodsFor: 'instance creation' stamp: 'LWC 11/24/2021 22:51:51'!
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Transfer category: 'ServiciosFinancieros-Ejercicio'!
+AccountTransaction subclass: #Transfer
+	instanceVariableNames: 'originAccount destinyAccount value depositValue withdrawValue'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Transfer methodsFor: 'nil' stamp: 'LWC 11/24/2021 22:11:20'!
+initializeWithOriginAccount: aOriginAccount toDestinyAccount: aDestinyAccount ForAmountOf: aMoney.
+	originAccount  _ aOriginAccount.
+	depositValue _ Deposit for: aMoney.
+	destinyAccount _ aDestinyAccount.
+	withdrawValue _ Withdraw for: aMoney.
+	value _ aMoney.
+
+	! !
+
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:24:15'!
+affectBalance
+	^ self value.! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:33:31'!
+affectBalanceOfAnAccount: anAccount
+	(anAccount = originAccount) ifTrue: [^self withdrawValue].
+	(anAccount = destinyAccount) ifTrue: [^self depositValue].! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:30:58'!
+depositValue
+	^ self value.
+	! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 21:59:41'!
+value
+	^ value.
+	! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 22:30:49'!
+withdrawValue
+	^ self value negated.
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Transfer class' category: 'ServiciosFinancieros-Ejercicio'!
+Transfer class
+	instanceVariableNames: ''!
+
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 21:58:25'!
+From: aReceptiveAccount To: aDestinyAccount ForAnAMountOf: aMoney
+	^self new initializeWithOriginAccount: aReceptiveAccount toDestinyAccount: aDestinyAccount ForAmountOf: aMoney.
+ ! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Ejercicio'!
@@ -155,16 +277,24 @@ AccountTransaction subclass: #Withdraw
 	poolDictionaries: ''
 	category: 'ServiciosFinancieros-Ejercicio'!
 
+!Withdraw methodsFor: 'initialization' stamp: 'LWC 11/24/2021 19:32:54'!
+affectBalance
+	^ self value negated.! !
+
+!Withdraw methodsFor: 'initialization' stamp: 'LWC 11/24/2021 22:34:36'!
+affectBalanceOfAnAccount: anAccount
+	^ self value negated.! !
+
 !Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
 initializeFor: aValue
 
 	value := aValue ! !
 
 
-!Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
+!Withdraw methodsFor: 'value' stamp: 'LWC 11/24/2021 19:10:32'!
 value
 
-	^ value! !
+	^value! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -176,6 +306,26 @@ Withdraw class
 for: aValue
 
 	^ self new initializeFor: aValue ! !
+
+
+!classDefinition: #Portfolio category: 'ServiciosFinancieros-Ejercicio'!
+Object subclass: #Portfolio
+	instanceVariableNames: 'accounts'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Ejercicio'!
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 23:03:16'!
+addAccount: aReceptiveAccount 
+	^accounts add: aReceptiveAccount.! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 23:05:12'!
+balance
+	^accounts sum: [:anAccount | anAccount balance] ifEmpty: [0*peso].! !
+
+!Portfolio methodsFor: 'as yet unclassified' stamp: 'LWC 11/24/2021 23:03:04'!
+initialize
+	accounts _ OrderedCollection new.! !
 
 
 !classDefinition: #ReceptiveAccount category: 'ServiciosFinancieros-Ejercicio'!
@@ -191,10 +341,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'HAW 5/23/2019 15:19:32'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LWC 11/24/2021 22:34:11'!
 balance
 
-	^transactions sum: [ :aTransaction | aTransaction value ] ifEmpty: [ 0 ]! !
+	^transactions sum: [ :aTransaction | aTransaction affectBalanceOfAnAccount: self] ifEmpty: [ 0 ]! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'NR 10/17/2019 03:28:43'!
 hasRegistered: aTransaction
@@ -212,3 +362,4 @@ register: aTransaction
 transactions 
 
 	^ transactions copy! !
+
