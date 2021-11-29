@@ -445,10 +445,18 @@ hasAccount: aReceptiveAccount
 	].
 	^existAccount.! !
 
-!Portfolio methodsFor: 'main protocol' stamp: 'LWC 11/28/2021 20:13:55'!
+!Portfolio methodsFor: 'main protocol' stamp: 'LWC 11/28/2021 21:13:09'!
 hasAnyAccountATransaction
 	
-	^(self balance ~= (0*peso)).! !
+	| existTransaction |
+	existTransaction _ false.
+	accounts do: [:anAsset | 
+		(anAsset isKindOf: Portfolio) ifTrue:[existTransaction _ anAsset hasAnyAccountATransaction].
+		(anAsset isKindOf: ReceptiveAccount) ifTrue: [
+			(anAsset transactions isEmpty) ifFalse: [^existTransaction _ true.].
+		].
+	].
+	^existTransaction.! !
 
 !Portfolio methodsFor: 'main protocol' stamp: 'LWC 11/28/2021 20:51:19'!
 transactionsOfAccount: aReceptiveAccount 
