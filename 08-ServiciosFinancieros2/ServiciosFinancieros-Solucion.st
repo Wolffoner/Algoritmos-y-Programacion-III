@@ -406,6 +406,72 @@ test06CannotTransferAZeroAmount
 ! !
 
 
+!classDefinition: #XXXTest category: 'ServiciosFinancieros-Solucion'!
+TestCase subclass: #XXXTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
+
+!XXXTest methodsFor: 'as yet unclassified' stamp: 'LWC 12/4/2021 21:53:39'!
+test01
+	| anAccount accountSummary anXXX collectionExpected |
+	anAccount _ ReceptiveAccount new.
+	anXXX _ XXX new.
+	
+	accountSummary _ anXXX accountSummaryOf: anAccount.
+	collectionExpected _ OrderedCollection new.
+	collectionExpected add: 'Balance = 0 pesos'.
+	
+	self assert: collectionExpected equals: accountSummary.! !
+
+!XXXTest methodsFor: 'as yet unclassified' stamp: 'LWC 12/4/2021 21:48:37'!
+test02
+	| anAccount accountSummary anXXX aDeposit collectionExpected |
+	anAccount _ ReceptiveAccount new.
+	anXXX _ XXX new.
+	aDeposit _ Deposit register: 200*peso on: anAccount.
+	
+	accountSummary _ anXXX accountSummaryOf: anAccount.
+	collectionExpected _ OrderedCollection new. 
+	collectionExpected add: 'Deposito por 200 pesos'.
+	collectionExpected add: 'Balance = 200 pesos'.
+
+	self assert: collectionExpected equals: accountSummary.! !
+
+!XXXTest methodsFor: 'as yet unclassified' stamp: 'LWC 12/4/2021 22:04:13'!
+test03
+	| anAccount accountSummary anXXX aDeposit collectionExpected aWithdraw|
+	anAccount _ ReceptiveAccount new.
+	anXXX _ XXX new.
+	aDeposit _ Deposit register: 200*peso on: anAccount.
+	aWithdraw _ Withdraw register: 100*peso on: anAccount.
+	
+	
+	accountSummary _ anXXX accountSummaryOf: anAccount.
+	collectionExpected _ OrderedCollection new. 
+	collectionExpected add: 'Deposito por 200 pesos'.
+	collectionExpected add: 'Retiro por 100 pesos'.
+	collectionExpected add: 'Balance = 100 pesos'.
+
+	self assert: collectionExpected equals: accountSummary.! !
+
+!XXXTest methodsFor: 'as yet unclassified' stamp: 'LWC 12/4/2021 22:22:13'!
+test04
+	| anAccount accountSummary anXXX collectionExpected anAccount2 aTransfer |
+	anAccount _ ReceptiveAccount new.
+	anAccount2 _ ReceptiveAccount new.
+	anXXX _ XXX new.
+	aTransfer _ Transfer amount: 100*peso from: anAccount to: anAccount2.
+	
+	accountSummary _ anXXX accountSummaryOf: anAccount.
+	collectionExpected _ OrderedCollection new. 
+	collectionExpected add: 'Salida por transferencia de 100 pesos'.
+	collectionExpected add: 'Balance = -100 pesos'
+.
+	self assert: (collectionExpected at: 2) equals: (accountSummary at: 2).! !
+
+
 !classDefinition: #Account category: 'ServiciosFinancieros-Solucion'!
 Object subclass: #Account
 	instanceVariableNames: ''
@@ -596,12 +662,12 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'main protocol' stamp: 'HAW 5/25/2019 11:24:46'!
+!ReceptiveAccount methodsFor: 'main protocol' stamp: 'LWC 12/4/2021 22:33:51'!
 balance
 
 	^transactions 
-		inject: 0
-		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance ]! !
+		inject: 0*peso
+		into: [ :currentBalance :transaction | transaction affectBalance: currentBalance].! !
 
 !ReceptiveAccount methodsFor: 'main protocol' stamp: 'NR 10/21/2019 18:55:56'!
 hasRegistered: aTransaction
@@ -771,10 +837,10 @@ depositLeg
 	^transfer depositLeg! !
 
 
-!TransferWithdrawLeg methodsFor: 'balance' stamp: 'LL 9/20/2020 22:27:55'!
+!TransferWithdrawLeg methodsFor: 'balance' stamp: 'LWC 12/4/2021 22:27:03'!
 affectBalance: aBalance
 
-	^aBalance - self value! !
+	^aBalance - self value.! !
 
 
 !classDefinition: #Withdraw category: 'ServiciosFinancieros-Solucion'!
@@ -915,3 +981,28 @@ amount: anAmountOfMoney from: originAccount to: destinationAccount
 	
 	
 	! !
+
+
+!classDefinition: #XXX category: 'ServiciosFinancieros-Solucion'!
+Object subclass: #XXX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'ServiciosFinancieros-Solucion'!
+
+!XXX methodsFor: 'as yet unclassified' stamp: 'LWC 12/4/2021 22:35:13'!
+accountSummaryOf: anAccount
+	| transactions accountSummary |
+	transactions _ anAccount transactions.
+	accountSummary _ OrderedCollection new.
+	transactions do: 
+		[:transaction | 
+			(transaction isKindOf: Deposit) 
+				ifTrue: [accountSummary add: 'Deposito por ', (transaction value) asString].
+			(transaction isKindOf: Withdraw)
+				ifTrue: [accountSummary add: 'Retiro por ', (transaction value) asString].
+			(transaction isKindOf: TransferWithdrawLeg)
+				ifTrue: [accountSummary add: 'Salida por transferencia de ', (transaction value) asString].
+		].
+	accountSummary add: 'Balance = ', (anAccount balance) asString.
+	^accountSummary.! !
